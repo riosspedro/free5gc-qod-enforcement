@@ -1,0 +1,28 @@
+{
+  "notificationDestination": "http://10.100.200.1:9999/notifications",
+  "ueIpv4Addr": "10.61.0.1",
+  "dnn": "internet",
+  "snssai": {
+    "sst": 1,
+    "sd": "112233"
+  },
+  "asSessionMediaComponent": {
+    "1": {
+      "medCompN": 1,
+      "medType": "VIDEO",
+      "flowInfos": [
+        {
+          "flowId": 1,
+          "flowDescriptions": [
+            "permit out ip from any to 10.61.0.1"
+          ]
+        }
+      ],
+      "mirBwUl": "10 Mbps",
+      "mirBwDl": "10 Mbps",
+      "marBwUl": "20 Mbps",
+      "marBwDl": "20 Mbps"
+    }
+  },
+  "supportedFeatures": "1"
+}

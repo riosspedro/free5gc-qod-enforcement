@@ -1,0 +1,60 @@
+[
+  {
+    "ID": 1,
+    "Gate": 0,
+    "MBR": {
+      "ULHigh": 3906,
+      "ULLow": 64,
+      "UL_Kbps": 1000000,
+      "DLHigh": 3906,
+      "DLLow": 64,
+      "DL_Kbps": 1000000
+    },
+    "GBR": {
+      "ULHigh": 0,
+      "ULLow": 0,
+      "UL_Kbps": 0,
+      "DLHigh": 0,
+      "DLLow": 0,
+      "DL_Kbps": 0
+    },
+    "CorrID": 0,
+    "RQI": 0,
+    "QFI": 1,
+    "PPI": 0,
+    "PDRIDs": [
+      50,
+      49
+    ],
+    "SEID": 1
+  },
+  {
+    "ID": 13,
+    "Gate": 0,
+    "MBR": {
+      "ULHigh": 78,
+      "ULLow": 32,
+      "UL_Kbps": 20000,
+      "DLHigh": 78,
+      "DLLow": 32,
+      "DL_Kbps": 20000
+    },
+    "GBR": {
+      "ULHigh": 39,
+      "ULLow": 16,
+      "UL_Kbps": 10000,
+      "DLHigh": 39,
+      "DLLow": 16,
+      "DL_Kbps": 10000
+    },
+    "CorrID": 0,
+    "RQI": 0,
+    "QFI": 13,
+    "PPI": 0,
+    "PDRIDs": [
+      48,
+      47
+    ],
+    "SEID": 1
+  }
+]

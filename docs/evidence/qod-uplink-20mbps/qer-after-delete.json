@@ -1,0 +1,31 @@
+[
+  {
+    "ID": 1,
+    "Gate": 0,
+    "MBR": {
+      "ULHigh": 3906,
+      "ULLow": 64,
+      "UL_Kbps": 1000000,
+      "DLHigh": 3906,
+      "DLLow": 64,
+      "DL_Kbps": 1000000
+    },
+    "GBR": {
+      "ULHigh": 0,
+      "ULLow": 0,
+      "UL_Kbps": 0,
+      "DLHigh": 0,
+      "DLLow": 0,
+      "DL_Kbps": 0
+    },
+    "CorrID": 0,
+    "RQI": 0,
+    "QFI": 1,
+    "PPI": 0,
+    "PDRIDs": [
+      50,
+      49
+    ],
+    "SEID": 1
+  }
+]

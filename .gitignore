@@ -1,0 +1,49 @@
+
+# Local build outputs
+**/build/bin/
+**/build/config/
+
+# Local secrets and runtime configuration
+.env
+.env.*
+!.env.example
+*.p12
+*.pfx
+
+# Experiment archives and runtime databases
+*.tar.gz
+*.bundle
+*.db
+*.sqlite
+*.sqlite3
+qod-artifacts/
+
+# Local credentials
+.env
+.env.*
+!.env.example
+
+# Private certificates and keys
+**/cert/*
+!**/cert/.gitignore
+*.key
+*.pem
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Generated binaries and build output
+**/build/bin/
+**/build/config/
+*.exe
+*.so
+*.o
+*.a
+
+# Runtime data
+*.db
+*.sqlite
+*.sqlite3
+*.log
+!docs/evidence/**/*.log

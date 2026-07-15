@@ -1,0 +1,6 @@
+docs/evidence/**/*.log -whitespace
+docs/evidence/**/*.json -whitespace
+Free5gc_Source_code/** -whitespace
+free5gc-compose-UERANSIM/** -whitespace
+free5gc-compose-external_gNB/** -whitespace
+README-INFOSYS.md -whitespace
