@@ -12,8 +12,11 @@ A snapshot foi criada com histórico Git novo e sem:
 - tokens;
 - credenciais;
 - bancos de dados de execução;
-- binários compilados;
+- binários compilados não auditados do ambiente original;
 - artefatos temporários do ambiente original.
+
+A exceção atual é a ferramenta `gtp5g-tunnel`, incluída com origem,
+versão, licença e SHA-256 documentados.
 
 O objetivo principal é permitir a análise do fluxo:
 
@@ -171,6 +174,70 @@ correspondesse ao tráfego medido.
 Isso comprova o enforcement no UPF, mas não representa ainda uma
 classificação completa e específica por servidor de aplicação conforme
 a semântica final esperada de uma implementação CAMARA comercial.
+
+---
+
+#### Diferença entre os repositórios
+
+O experimento é dividido em dois repositórios com responsabilidades
+distintas.
+
+#### `free5gc-qod-enforcement`
+
+É o repositório do **ambiente 5G e do enforcement no plano de dados**.
+Ele contém:
+
+- código e imagens customizadas do free5GC;
+- configurações Docker Compose;
+- NEF, PCF, SMF e UPF;
+- módulo `gtp5g` e ferramentas de inspeção;
+- UERANSIM;
+- configuração do subscriber;
+- scripts para PDR e QER;
+- testes com `iperf3`;
+- evidências e documentação do experimento.
+
+É nesse repositório que a solicitação QoD é transformada em política,
+regras PFCP, PDRs e QERs e finalmente aplicada ao tráfego pelo UPF.
+
+#### `open-qod-gateway`
+
+É o repositório da **API externa que recebe e orquestra a solicitação
+QoD**. Ele contém uma aplicação Python/FastAPI responsável por:
+
+- autenticar a aplicação por OAuth2;
+- emitir e validar JWTs;
+- expor endpoints de criação, consulta, atualização e exclusão;
+- traduzir perfis públicos, como `QOS_M`, para o formato aceito pelo NEF;
+- obter um token OAuth2 do NEF;
+- criar e controlar recursos `AS Session with QoS`;
+- persistir a associação entre a sessão externa e a sessão interna.
+
+O gateway não instala regras diretamente no UPF e não substitui o
+free5GC. Ele entrega a solicitação ao NEF; a cadeia
+`NEF -> PCF -> SMF -> UPF/gtp5g` realiza o provisionamento interno.
+
+Em resumo:
+
+```text
+open-qod-gateway
+    = interface de aplicação, autenticação e orquestração da sessão
+
+free5gc-qod-enforcement
+    = core 5G, plano de controle, plano de dados e enforcement real
+```
+
+Os dois repositórios são necessários para reproduzir o fluxo completo:
+
+```text
+Application
+    -> Open QoD Gateway
+    -> NEF
+    -> PCF
+    -> SMF
+    -> UPF / gtp5g
+    -> UERANSIM
+```
 
 ---
 
@@ -492,6 +559,116 @@ O SMF removia a política, mas podia manter:
 - referência em `QerUpfMap`.
 
 A correção incluída remove esse estado residual.
+
+---
+
+### 5.10 Correções operacionais da reprodução final
+
+Além dos problemas de código e de política descritos acima, a execução
+final encontrou diferenças entre a documentação, o Compose, as imagens
+existentes e o estado efetivo do servidor.
+
+#### Endereço do NEF no Compose
+
+O serviço NEF estava configurado com o endereço estático
+`10.100.200.9`, enquanto o endereço utilizado pela rede do ambiente
+reproduzido era `10.100.200.14`.
+
+A configuração do Compose foi corrigida para evitar divergência entre o
+endpoint anunciado, o container ativo e os clientes que acessam o NEF.
+
+#### Permissão do script do UPF
+
+O arquivo
+`free5gc-compose-UERANSIM/config/upf-iptables.sh` estava versionado com
+permissão `0644`.
+
+Ele passou a ser executável, com modo `0755`, para que a imagem do UPF
+possa aplicar corretamente as regras de encaminhamento e NAT.
+
+#### Ferramenta permanente para inspeção do gtp5g
+
+O script `scripts/inspect-qod-rules.sh` dependia anteriormente de uma
+cópia temporária de `gogtp5g-tunnel` em `/tmp`.
+
+Esse arquivo desaparecia quando o container do UPF era recriado.
+
+A ferramenta passou a ser incluída permanentemente na imagem em:
+
+```text
+/free5gc/gtp5g-tunnel
+```
+
+O binário versionado está em:
+
+```text
+Free5gc_Source_code/go-upf/tools/gtp5g-tunnel
+```
+
+Sua origem, versão, commit, arquitetura, licença e SHA-256 estão
+documentados em `Free5gc_Source_code/go-upf/tools/README.md`.
+
+#### Build offline do UPF
+
+Durante a reprodução, o host não conseguiu acessar os repositórios APK
+do Alpine. Por isso, a reconstrução convencional da imagem falhou antes
+de instalar as dependências.
+
+Para não substituir uma imagem funcional por uma imagem incompleta, foi
+preservada uma tag de backup e criada uma imagem derivada localmente,
+contendo a ferramenta de inspeção já validada.
+
+O Dockerfile oficial também foi atualizado para que builds futuros
+copiem a ferramenta diretamente para a imagem.
+
+#### Estado PFCP após recriar o UPF
+
+PDRs e QERs são estado de runtime. Ao recriar o container do UPF, as
+regras instaladas anteriormente deixaram de existir.
+
+A recuperação validada foi:
+
+1. confirmar o UPF ativo e o QoS habilitado;
+2. recriar ou reiniciar o SMF para restabelecer a associação PFCP;
+3. recriar o UERANSIM;
+4. iniciar o processo do UE;
+5. aguardar novo registro e nova PDU Session;
+6. confirmar `uesimtun0`, o endereço da UE e os PDRs e QERs default.
+
+A criação de uma nova sessão QoD só deve ocorrer depois dessa
+recuperação.
+
+#### Inicialização do UE no UERANSIM
+
+No Compose utilizado, o processo principal do container UERANSIM inicia
+o gNB. O processo `nr-ue` pode não ser iniciado automaticamente.
+
+Quando isso ocorrer, execute:
+
+```bash
+docker exec -d ueransim sh -c \
+  'cd /ueransim && ./nr-ue -c ./config/uecfg.yaml >/tmp/nr-ue.log 2>&1'
+```
+
+Depois, confirme no log:
+
+```text
+Registration accept received
+PDU Session establishment is successful
+```
+
+#### Estado final validado
+
+Após as correções, o ambiente apresentou:
+
+- `QoS Enable: 1`;
+- UE `10.61.0.1/16` na interface `uesimtun0`;
+- conectividade local sem perda até `10.100.200.1`;
+- QER default de `200 Mbit/s`;
+- QER dedicado de `20 Mbit/s` durante a sessão QoD;
+- tráfego UDP oferecido a `40 Mbit/s` e recebido próximo de `20 Mbit/s`;
+- remoção das regras dedicadas após `DELETE`;
+- preservação das regras default e da conectividade da UE.
 
 ---
 
@@ -981,9 +1158,11 @@ pcf
 smf
 upf
 nef
-webui
 ueransim
 ```
+
+O WebUI pode existir no Compose, mas não é requisito operacional deste
+experimento e não é utilizado para cadastrar o subscriber.
 
 ---
 
@@ -1013,54 +1192,77 @@ docker logs \
 
 ---
 
-## 7.13 Cadastrar o subscriber
+## 7.13 Cadastrar o subscriber sem WebUI
 
-A forma mais simples é utilizar o WebUI.
+O experimento validado não depende do WebUI. O subscriber foi
+provisionado diretamente no MongoDB utilizado pelo UDR.
 
-Abra:
-
-```text
-http://IP_DA_VM:5000
-```
-
-Credenciais padrão:
+No Compose reproduzido:
 
 ```text
-Username: admin
-Password: free5gc
+container: mongodb
+imagem:    mongo:3.6.8
+banco:     free5gc
+cliente:   mongo
 ```
 
-Cadastre um subscriber de laboratório com valores coerentes com o
-`uecfg.yaml`.
+As collections necessárias ao subscriber validado são:
 
-Exemplo validado:
+```text
+subscriptionData.authenticationData.authenticationSubscription
+subscriptionData.provisionedData.amData
+subscriptionData.provisionedData.smData
+subscriptionData.provisionedData.smfSelectionSubscriptionData
+policyData.ues.amData
+policyData.ues.smData
+```
+
+O schema depende da versão do free5GC. Antes de inserir documentos,
+confirme os nomes das collections e compare com os modelos usados pelo
+UDR, UDM e PCF da árvore atual.
+
+Para verificar somente a existência das collections:
+
+```bash
+docker exec mongodb mongo free5gc --quiet --eval '
+db.getCollectionNames().sort().forEach(function(name) {
+    print(name);
+});
+'
+```
+
+Os documentos precisam manter coerência entre:
+
+- `ueId`/SUPI;
+- PLMN;
+- `servingPlmnId`;
+- chave permanente e OPc;
+- AMF;
+- S-NSSAI;
+- DNN;
+- AMBR;
+- tipo de PDU Session;
+- dados de política do PCF.
+
+No ambiente validado:
 
 ```text
 PLMN:       20893
-SUPI/IMSI:  208930000000001
-K:          8baf473f2f8fd09487cccbd7097c6862
-OPc:        8e27b6af0e692e750f32667a3b14605d
+SUPI/IMSI:  imsi-208930000000001
 AMF:        8000
 DNN:        internet
 SST:        1
 SD:         112233
+UE AMBR:    200 Mbps
+Session AMBR: 200 Mbps
 ```
 
-Esses valores são exclusivamente de laboratório.
+A chave permanente e o OPc devem ser tratados como dados sensíveis,
+mesmo em laboratório. Não imprima esses valores em logs e não os
+adicione a dumps ou evidências publicadas.
 
-O subscriber e o arquivo do UE precisam utilizar exatamente os mesmos:
-
-- IMSI;
-- K;
-- OP ou OPc;
-- AMF;
-- MCC;
-- MNC;
-- SST;
-- SD;
-- DNN.
-
----
+Depois do provisionamento, confirme que existe exatamente um documento
+coerente para o UE em cada collection e valide o registro do UERANSIM.
 
 ## 7.14 Verificar a configuração do UE
 
@@ -1697,7 +1899,7 @@ Causa provável:
 
 - UE não registrado;
 - subscriber inexistente;
-- parâmetros do UE diferentes do WebUI;
+- parâmetros do UE diferentes dos documentos provisionados no MongoDB;
 - PDU Session ainda não estabelecida.
 
 Verifique:
@@ -1997,7 +2199,8 @@ Não devem ser adicionados ao repositório:
 - dumps do MongoDB;
 - bancos SQLite de execução;
 - logs com `Authorization`;
-- binários compilados.
+- artefatos de build não auditados;
+- binários sem origem, versão, licença e SHA-256 documentados.
 
 Antes de cada publicação, execute uma nova varredura.
 
