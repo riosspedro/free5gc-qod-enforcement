@@ -253,7 +253,7 @@ services:
       NEF_OAUTH_JWT_SIGNING_KEY: "${NEF_OAUTH_JWT_SIGNING_KEY:?NEF_OAUTH_JWT_SIGNING_KEY is required}"
     networks:
       privnet:
-        ipv4_address: 10.100.200.9
+        ipv4_address: 10.100.200.14
         aliases:
           - nef.free5gc.org
     depends_on:

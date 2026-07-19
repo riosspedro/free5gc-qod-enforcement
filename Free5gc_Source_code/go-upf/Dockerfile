@@ -17,10 +17,13 @@ WORKDIR /free5gc
 
 # Copy executable and scripts as root, ensure perms
 COPY build/bin/${F5GC_MODULE} /free5gc/${F5GC_MODULE}
+COPY tools/gtp5g-tunnel /free5gc/gtp5g-tunnel
 COPY config/upf-iptables.sh /free5gc/upf-iptables.sh
 COPY config/upfcfg.yaml /free5gc/config/upfcfg.yaml
 
-RUN chmod +x /free5gc/${F5GC_MODULE} /free5gc/upf-iptables.sh \
+RUN chmod +x /free5gc/${F5GC_MODULE} \
+        /free5gc/gtp5g-tunnel \
+        /free5gc/upf-iptables.sh \
     && chown -R free5gc:free5gc /free5gc
 
 # NOTE: keep USER as root so iptables can run in CMD; we will drop to free5gc using su-exec
