@@ -12,7 +12,7 @@ configuration:
       pem: cert/nef.pem # NEF TLS Certificate
       key: cert/nef.key # NEF TLS Private key
       caPem: cert/ca.pem
-      verifyClient: true
+      verifyClient: false
   nrfUri: http://nrf.free5gc.org:8000 # A valid URI of NRF
   nrfCertPem: cert/nrf.pem # NRF Certificate
   serviceList: # the SBI services provided by this NEF
