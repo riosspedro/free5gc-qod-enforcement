@@ -47,3 +47,7 @@ qod-artifacts/
 *.sqlite3
 *.log
 !docs/evidence/**/*.log
+
+__pycache__/
+
+*.py[cod]
