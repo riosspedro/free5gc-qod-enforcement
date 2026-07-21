@@ -1,0 +1,16 @@
+HTTP=201
+{
+  "sessionId": "c22d8326-67fb-4b28-93aa-cadf4dc1afd3",
+  "device": {
+    "ipv4Address": "10.61.0.1"
+  },
+  "applicationServer": {
+    "ipv4Address": "10.100.200.1/32"
+  },
+  "qosProfile": "QOS_M",
+  "duration": 180,
+  "qosStatus": "AVAILABLE",
+  "startedAt": "2026-07-21T19:40:45.325150Z",
+  "expiresAt": "2026-07-21T19:43:45.325150Z"
+}
+Estado salvo em: /tmp/qod-controller-state.json

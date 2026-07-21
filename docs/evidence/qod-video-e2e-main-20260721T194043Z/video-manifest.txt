@@ -1,0 +1,16 @@
+acceptance_commit=d202efe0e4f639b380f2a9695167025987098a2d
+acceptance_branch=main
+acceptance_run=/tmp/qod-main-acceptance-20260721T194043Z
+acceptance_result=APROVADA
+
+source-330.ts
+size_bytes=5833076
+sha256=1216930f162a2d1b44160e63ddc4791663666b368ce1326da169012db9886e06
+
+expected-300.ts
+size_bytes=5293328
+sha256=d53bb812ddb7078c8e60a03a25def6171591b4d0858f24a0e3d24626ff3bced6
+
+received-300.ts
+size_bytes=5293328
+sha256=d53bb812ddb7078c8e60a03a25def6171591b4d0858f24a0e3d24626ff3bced6

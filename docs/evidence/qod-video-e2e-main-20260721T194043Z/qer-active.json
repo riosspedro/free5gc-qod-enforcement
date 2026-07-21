@@ -1,0 +1,22 @@
+[
+  {
+    "ID": 1,
+    "UL_MBR_Kbps": 200000,
+    "UL_GBR_Kbps": 0,
+    "QFI": 1,
+    "PDRIDs": [
+      2,
+      1
+    ]
+  },
+  {
+    "ID": 8,
+    "UL_MBR_Kbps": 20000,
+    "UL_GBR_Kbps": 10000,
+    "QFI": 8,
+    "PDRIDs": [
+      16,
+      15
+    ]
+  }
+]

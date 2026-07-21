@@ -1,0 +1,36 @@
+QoD VIDEO END-TO-END ACCEPTANCE
+
+Resultado: APROVADO
+
+Perfil QoD:
+- QOS_M
+- GBR UL/DL: 10 Mbit/s
+- MBR UL/DL: 20 Mbit/s
+
+Transmissão:
+- Origem UE: 10.61.0.1
+- Destino: 10.100.200.1
+- Porta UDP: 55026
+- Pacotes enviados: 4433
+- Bytes enviados: 5833076
+- Taxa efetiva: aproximadamente 5 Mbit/s
+
+Vídeo recebido:
+- Codec: H.264
+- Resolução: 1280x720
+- Taxa de quadros: 30 fps
+- Frames: 300
+- Duração: 10 segundos
+- Erros de decodificação: 0
+- Hash recebido idêntico ao arquivo esperado
+
+Datapath durante QoD:
+- PDRs: 4
+- QERs: 2
+- QER dedicado com MBR de 20 Mbit/s e GBR de 10 Mbit/s
+
+Estado após DELETE:
+- PDRs: 2
+- QERs: 1
+- QoS gtp5g habilitado
+- Baseline restaurado
