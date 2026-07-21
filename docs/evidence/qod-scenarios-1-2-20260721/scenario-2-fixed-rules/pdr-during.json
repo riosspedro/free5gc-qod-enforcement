@@ -1,0 +1,136 @@
+[
+  {
+    "ID": 17,
+    "Precedence": 23,
+    "PDI": {
+      "SrcIntf": null,
+      "UEAddr": "10.61.0.1",
+      "FTEID": {
+        "TEID": 2,
+        "GTPuAddr": "10.100.200.3"
+      },
+      "SDF": {
+        "FD": {
+          "Action": 1,
+          "Dir": 2,
+          "Proto": 255,
+          "Src": {
+            "IP": "10.61.0.1",
+            "Mask": null
+          },
+          "Dst": {
+            "IP": "0.0.0.0",
+            "Mask": "AAAAAA=="
+          },
+          "SrcPorts": null,
+          "DstPorts": null
+        },
+        "TTC": null,
+        "SPI": null,
+        "FL": null,
+        "BID": null
+      },
+      "EPFs": null
+    },
+    "OuterHdrRemoval": 0,
+    "FARID": 17,
+    "QERID": [
+      9
+    ],
+    "URRID": [
+      1,
+      2
+    ],
+    "SEID": 1,
+    "PDNType": null
+  },
+  {
+    "ID": 1,
+    "Precedence": 255,
+    "PDI": {
+      "SrcIntf": null,
+      "UEAddr": "10.61.0.1",
+      "FTEID": {
+        "TEID": 2,
+        "GTPuAddr": "10.100.200.3"
+      },
+      "SDF": null,
+      "EPFs": null
+    },
+    "OuterHdrRemoval": 0,
+    "FARID": 1,
+    "QERID": [
+      1
+    ],
+    "URRID": [
+      1,
+      2
+    ],
+    "SEID": 1,
+    "PDNType": null
+  },
+  {
+    "ID": 18,
+    "Precedence": 23,
+    "PDI": {
+      "SrcIntf": null,
+      "UEAddr": "10.61.0.1",
+      "FTEID": null,
+      "SDF": {
+        "FD": {
+          "Action": 1,
+          "Dir": 2,
+          "Proto": 255,
+          "Src": {
+            "IP": "0.0.0.0",
+            "Mask": "AAAAAA=="
+          },
+          "Dst": {
+            "IP": "10.61.0.1",
+            "Mask": null
+          },
+          "SrcPorts": null,
+          "DstPorts": null
+        },
+        "TTC": null,
+        "SPI": null,
+        "FL": null,
+        "BID": null
+      },
+      "EPFs": null
+    },
+    "OuterHdrRemoval": null,
+    "FARID": 18,
+    "QERID": [
+      9
+    ],
+    "URRID": [
+      1,
+      2
+    ],
+    "SEID": 1,
+    "PDNType": null
+  },
+  {
+    "ID": 2,
+    "Precedence": 255,
+    "PDI": {
+      "SrcIntf": null,
+      "UEAddr": "10.61.0.1",
+      "FTEID": null,
+      "SDF": null,
+      "EPFs": null
+    },
+    "OuterHdrRemoval": null,
+    "FARID": 2,
+    "QERID": [
+      1
+    ],
+    "URRID": [
+      1,
+      2
+    ],
+    "SEID": 1,
+    "PDNType": null
+  }
+]

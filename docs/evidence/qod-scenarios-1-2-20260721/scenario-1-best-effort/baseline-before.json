@@ -1,0 +1,10 @@
+{
+  "gatewayHttp": 200,
+  "gateway": {
+    "status": "ok"
+  },
+  "pdrCount": 2,
+  "qerCount": 1,
+  "qosEnabled": true,
+  "baselineClean": true
+}

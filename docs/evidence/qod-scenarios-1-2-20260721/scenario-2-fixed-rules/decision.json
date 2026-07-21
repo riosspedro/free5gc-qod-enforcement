@@ -1,0 +1,9 @@
+{
+  "scenario": "fixed-rules",
+  "metric": "application_bitrate_bps",
+  "observed_bps": 4234662,
+  "threshold_bps": 4000000,
+  "request_qod": true,
+  "reason": "bitrate_above_threshold",
+  "qos_profile": "QOS_M"
+}

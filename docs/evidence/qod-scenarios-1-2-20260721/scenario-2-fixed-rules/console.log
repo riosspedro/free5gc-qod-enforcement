@@ -1,0 +1,189 @@
+SCENARIO=fixed-rules
+THRESHOLD_BPS=4000000
+
+===== BASELINE INICIAL =====
+{
+  "gatewayHttp": 200,
+  "gateway": {
+    "status": "ok"
+  },
+  "pdrCount": 2,
+  "qerCount": 1,
+  "qosEnabled": true,
+  "baselineClean": true
+}
+
+===== GERAÇÃO DA FONTE =====
+
+===== GERAÇÃO DO BASELINE DE 300 FRAMES =====
+Fonte=/tmp/qod-scenario-2-20260721T210132Z/source-330.ts
+Baseline=/tmp/qod-scenario-2-20260721T210132Z/expected-300.ts
+Hash esperado=d53bb812ddb7078c8e60a03a25def6171591b4d0858f24a0e3d24626ff3bced6
+
+===== MÉTRICA E REGRA DE DECISÃO =====
+{
+  "scenario": "fixed-rules",
+  "metric": "application_bitrate_bps",
+  "observed_bps": 4234662,
+  "threshold_bps": 4000000,
+  "request_qod": true,
+  "reason": "bitrate_above_threshold",
+  "qos_profile": "QOS_M"
+}
+
+===== CRIAÇÃO DA SESSÃO QOD =====
+HTTP=201
+{
+  "sessionId": "4d7cca85-beaf-49ab-97d8-fbe07e1ed16c",
+  "device": {
+    "ipv4Address": "10.61.0.1"
+  },
+  "applicationServer": {
+    "ipv4Address": "10.100.200.1/32"
+  },
+  "qosProfile": "QOS_M",
+  "duration": 180,
+  "qosStatus": "AVAILABLE",
+  "startedAt": "2026-07-21T21:01:34.940054Z",
+  "expiresAt": "2026-07-21T21:04:34.940054Z"
+}
+Estado salvo em: /tmp/qod-controller-state.json
+
+===== ESTADO ESPERADO DO UPF =====
+tentativa=1 PDRs=4 QERs=2
+[
+  {
+    "ID": 1,
+    "Gate": 0,
+    "MBR": {
+      "ULHigh": 781,
+      "ULLow": 64,
+      "UL_Kbps": 200000,
+      "DLHigh": 781,
+      "DLLow": 64,
+      "DL_Kbps": 200000
+    },
+    "GBR": {
+      "ULHigh": 0,
+      "ULLow": 0,
+      "UL_Kbps": 0,
+      "DLHigh": 0,
+      "DLLow": 0,
+      "DL_Kbps": 0
+    },
+    "CorrID": 0,
+    "RQI": 0,
+    "QFI": 1,
+    "PPI": 0,
+    "PDRIDs": [
+      2,
+      1
+    ],
+    "SEID": 1
+  },
+  {
+    "ID": 9,
+    "Gate": 0,
+    "MBR": {
+      "ULHigh": 78,
+      "ULLow": 32,
+      "UL_Kbps": 20000,
+      "DLHigh": 78,
+      "DLLow": 32,
+      "DL_Kbps": 20000
+    },
+    "GBR": {
+      "ULHigh": 39,
+      "ULLow": 16,
+      "UL_Kbps": 10000,
+      "DLHigh": 39,
+      "DLLow": 16,
+      "DL_Kbps": 10000
+    },
+    "CorrID": 0,
+    "RQI": 0,
+    "QFI": 9,
+    "PPI": 0,
+    "PDRIDs": [
+      18,
+      17
+    ],
+    "SEID": 1
+  }
+]
+
+===== RECEPTOR =====
+
+===== TRANSMISSOR UNIFORME =====
+Código transmissor=0
+Código receptor=0
+origem=('10.61.0.1', 59463)
+destino=('10.100.200.1', 55032)
+pacotes=4433
+bytes=5833076
+duração=9.333007
+taxa=4.999955 Mbps
+
+===== FFPROBE =====
+{
+  "programs": [
+    {
+      "streams": [
+        {
+          "codec_name": "h264",
+          "width": 1280,
+          "height": 720,
+          "avg_frame_rate": "30/1",
+          "nb_read_frames": "300"
+        }
+      ]
+    }
+  ],
+  "stream_groups": [],
+  "streams": [
+    {
+      "codec_name": "h264",
+      "width": 1280,
+      "height": 720,
+      "avg_frame_rate": "30/1",
+      "nb_read_frames": "300"
+    }
+  ],
+  "format": {
+    "duration": "10.000000",
+    "size": "5293328",
+    "bit_rate": "4234662"
+  }
+}
+
+===== DECODIFICAÇÃO =====
+Frames=300
+Código de decodificação=0
+Ocorrências de erro=0
+Hash esperado=d53bb812ddb7078c8e60a03a25def6171591b4d0858f24a0e3d24626ff3bced6
+Hash recebido=d53bb812ddb7078c8e60a03a25def6171591b4d0858f24a0e3d24626ff3bced6
+Vídeo: VALIDADO
+
+===== LIBERAÇÃO DA QOS =====
+HTTP=204
+Estado removido: /tmp/qod-controller-state.json
+
+===== BASELINE FINAL =====
+{
+  "gatewayHttp": 200,
+  "gateway": {
+    "status": "ok"
+  },
+  "pdrCount": 2,
+  "qerCount": 1,
+  "qosEnabled": true,
+  "baselineClean": true
+}
+
+SCENARIO=fixed-rules
+APPLICATION_BITRATE_BPS=4234662
+THRESHOLD_BPS=4000000
+QOD_REQUESTED=1
+DECISION_REASON=bitrate_above_threshold
+EXPERIMENTO_E2E=SUCESSO
+Evidências preservadas em: /tmp/qod-scenario-2-20260721T210132Z

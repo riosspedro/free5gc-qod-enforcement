@@ -1,0 +1,9 @@
+{
+  "scenario": "best-effort",
+  "metric": "application_bitrate_bps",
+  "observed_bps": 4234662,
+  "threshold_bps": 4000000,
+  "request_qod": false,
+  "reason": "scenario_forbids_qod",
+  "qos_profile": "QOS_M"
+}
