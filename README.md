@@ -1625,12 +1625,10 @@ echo "TOKEN_OBTIDO"
 cat > /tmp/gateway-session.json <<'JSON'
 {
   "device": {
-    "ipv4Address": {
-      "publicAddress": "10.61.0.1"
-    }
+    "ipv4Address": "10.61.0.1"
   },
   "applicationServer": {
-    "ipv4Address": "10.100.200.1"
+    "ipv4Address": "10.100.200.1/32"
   },
   "qosProfile": "QOS_M",
   "duration": 300
@@ -1840,6 +1838,195 @@ docker exec \
 
 Após o `DELETE`, o QER e o PDR dedicados devem ser removidos, restando
 somente as regras default da PDU Session.
+
+---
+
+## 9.8 Automatizar o ciclo de sessão QoD
+
+O script `scripts/qod-controller.py` automatiza o ciclo de vida da sessão
+QoD sem provisionar diretamente o PCF, o SMF ou o UPF.
+
+O controlador:
+
+- obtém um token OAuth2 do Open QoD Gateway;
+- cria uma sessão QoD;
+- consulta seu estado;
+- exclui a sessão;
+- salva temporariamente o identificador da sessão;
+- observa os PDRs, QERs e o estado do QoS no `gtp5g`;
+- verifica se o ambiente está no baseline esperado.
+
+O arquivo de estado temporário utilizado é:
+
+```text
+/tmp/qod-controller-state.json
+```
+
+As credenciais são lidas do `.env` local do Open QoD Gateway. O conteúdo
+desse arquivo não é exibido nem copiado para os artefatos.
+
+Verifique o baseline:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python3 scripts/qod-controller.py baseline
+```
+
+O baseline validado contém:
+
+```text
+Gateway HTTP: 200
+PDRs:         2
+QERs:         1
+gtp5g QoS:    habilitado
+```
+
+Crie uma sessão `QOS_M`:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python3 scripts/qod-controller.py create \
+  --device 10.61.0.1 \
+  --server 10.100.200.1/32 \
+  --profile QOS_M \
+  --duration 300
+```
+
+Consulte a sessão salva:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python3 scripts/qod-controller.py get
+```
+
+Exclua a sessão:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python3 scripts/qod-controller.py delete
+```
+
+Também é possível informar explicitamente o identificador:
+
+```bash
+PYTHONDONTWRITEBYTECODE=1 \
+python3 scripts/qod-controller.py get \
+  --session-id UUID_DA_SESSAO
+```
+
+O provisionamento continua seguindo o caminho:
+
+```text
+controlador
+    -> Open QoD Gateway
+    -> NEF
+    -> PCF
+    -> SMF
+    -> UPF / gtp5g
+```
+
+O acesso ao UPF realizado pelo controlador é exclusivamente observacional.
+Ele não substitui o provisionamento efetuado pelo core 5G.
+
+---
+
+## 9.9 Executar o experimento automatizado de vídeo
+
+O script `scripts/qod-video-experiment.sh` executa um ensaio completo,
+autossuficiente e reproduzível.
+
+Ele realiza:
+
+1. validação do baseline inicial;
+2. geração de uma fonte sintética H.264 com 330 frames;
+3. geração do arquivo de referência com 300 frames;
+4. criação de uma sessão `QOS_M`;
+5. confirmação dos PDRs e do QER dedicado;
+6. inicialização do receptor UDP;
+7. transmissão uniforme pelo namespace de rede do UE;
+8. inspeção com `ffprobe`;
+9. decodificação integral com `ffmpeg`;
+10. comparação do hash SHA-256;
+11. exclusão da sessão e validação do baseline final.
+
+Execute:
+
+```bash
+./scripts/qod-video-experiment.sh
+```
+
+O FFmpeg não precisa estar instalado diretamente no host. O script utiliza
+a imagem fixada pelo digest:
+
+```text
+lscr.io/linuxserver/ffmpeg@sha256:4a4ed3a9242b51ab7821c611b4101a6a7dd72517f7f19e3a7b1833cae5020ecb
+```
+
+As principais dependências do host são:
+
+- Docker;
+- Python 3;
+- `jq`;
+- `sha256sum`;
+- `nsenter`;
+- permissão para executar `sudo -n nsenter`;
+- containers `ueransim` e `upf` ativos;
+- Open QoD Gateway disponível em `127.0.0.1:8080`.
+
+A configuração padrão utiliza:
+
+```text
+Taxa: 5.000.000 bit/s
+Porta UDP: 55024
+Perfil: QOS_M
+GBR: 10 Mbit/s
+MBR: 20 Mbit/s
+```
+
+A taxa e a porta podem ser alteradas:
+
+```bash
+PORT=55025 \
+RATE=5000000 \
+./scripts/qod-video-experiment.sh
+```
+
+Também é possível definir o diretório das evidências:
+
+```bash
+RUN=/tmp/meu-ensaio-qod \
+./scripts/qod-video-experiment.sh
+```
+
+Uma execução válida deve apresentar:
+
+```text
+Frames=300
+Código de decodificação=0
+Ocorrências de erro=0
+Vídeo QoD: VALIDADO
+EXPERIMENTO_E2E=SUCESSO
+```
+
+O hash do vídeo recebido deve ser idêntico ao hash do arquivo de referência
+gerado na mesma execução.
+
+As evidências são preservadas em um diretório semelhante a:
+
+```text
+/tmp/qod-video-controller-e2e-AAAAMMDDTHHMMSSZ/
+```
+
+O transmissor aplica espaçamento uniforme aos datagramas UDP. Isso evita que
+rajadas instantâneas superiores ao MBR sejam descartadas pelo policiador do
+QER, mesmo quando a taxa média do vídeo é inferior a 20 Mbit/s.
+
+Um `trap` de limpeza tenta excluir a sessão QoD caso o experimento seja
+interrompido ou falhe.
+
+A classificação deste testbed continua utilizando um filtro amplo. Ela ainda
+não representa uma classificação rigorosa por servidor, porta, protocolo e
+direção.
 
 ---
 
