@@ -1,0 +1,66 @@
+services:
+  free5gc-upf:
+    build:
+      network: host
+      dockerfile: Dockerfile.repro
+
+  free5gc-nrf:
+    build:
+      network: host
+
+  free5gc-amf:
+    build:
+      network: host
+
+  free5gc-ausf:
+    build:
+      network: host
+
+  free5gc-nssf:
+    build:
+      network: host
+
+  free5gc-pcf:
+    build:
+      network: host
+
+  free5gc-smf:
+    build:
+      network: host
+
+  free5gc-udm:
+    build:
+      network: host
+
+  free5gc-udr:
+    build:
+      network: host
+
+  free5gc-chf:
+    build:
+      network: host
+
+  free5gc-n3iwf:
+    build:
+      network: host
+
+  free5gc-tngf:
+    build:
+      network: host
+
+  free5gc-nef:
+    build:
+      network: host
+
+  free5gc-webui:
+    build:
+      network: host
+
+  ueransim:
+    build:
+      network: host
+      dockerfile: Dockerfile.repro.buster3
+
+  n3iwue:
+    build:
+      network: host

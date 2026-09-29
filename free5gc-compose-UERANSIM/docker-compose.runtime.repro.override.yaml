@@ -1,0 +1,4 @@
+services:
+  free5gc-nef:
+    volumes:
+      - ./config/nefcfg.runtime.yaml:/free5gc/config/nefcfg.yaml

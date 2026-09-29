@@ -51,3 +51,6 @@ qod-artifacts/
 __pycache__/
 
 *.py[cod]
+free5gc-compose-UERANSIM/base/free5gc/
+free5gc-compose-UERANSIM/config/subscriber-208930000000001-112233.json
+free5gc-compose-UERANSIM/config/subscriber-208930000000001-112233-baseline.json
